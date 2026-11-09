@@ -1,0 +1,31 @@
+{
+  "name": "qqnt-export",
+  "version": "0.3.0",
+  "description": "Local-first QQ NT chat reader and exporter with a pure CLI interface",
+  "type": "module",
+  "bin": {
+    "qqnt-export": "bin/qqnt-export.js"
+  },
+  "scripts": {
+    "build": "node scripts/setup-sqlcipher.js && node scripts/build-core.js && node scripts/build-sea.js",
+    "build:debug": "node scripts/setup-sqlcipher.js && node scripts/build-core.js --debug",
+    "test": "node scripts/setup-sqlcipher.js && cargo build --manifest-path core/Cargo.toml && node --test test/*.test.js && cargo test --manifest-path core/Cargo.toml",
+    "check": "node --check bin/qqnt-export.js && node --check src/cli.js && node --check src/runtime.js && cargo check --manifest-path core/Cargo.toml",
+    "start": "node bin/qqnt-export.js"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "keywords": [
+    "qq",
+    "qqnt",
+    "chat-export",
+    "sqlcipher",
+    "cli"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "postject": "^1.0.0-alpha.6"
+  }
+}
