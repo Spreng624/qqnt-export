@@ -139,6 +139,19 @@ async function runOpen(options) {
 async function runAuth(options) {
   const accountsResult = await runCore(["accounts"]);
   const selected = await selectAccount(accountsResult, options);
+  const keyStatus = await runCore([
+    "key",
+    "check",
+    selected.account,
+    selected.dbPath,
+  ]);
+  if (keyStatus.valid) {
+    console.log(`账号 ${selected.account} 已有有效缓存密钥，跳过 auth。`);
+    return;
+  }
+  if (keyStatus.cached) {
+    console.log(`账号 ${selected.account} 的缓存密钥已失效，将重新获取。`);
+  }
   if (isInteractive()) {
     const accepted = await confirm(
       `auth 将调试启动 QQ 并截获账号 ${selected.account} 的数据库密钥。继续？`,

@@ -41,6 +41,10 @@ pub fn load_key(account: &str) -> Result<Zeroizing<String>> {
     Ok(Zeroizing::new(key))
 }
 
+pub fn has_key(account: &str) -> Result<bool> {
+    Ok(key_path(account)?.is_file())
+}
+
 fn key_path(account: &str) -> Result<PathBuf> {
     if !account.chars().all(|character| character.is_ascii_digit()) {
         bail!("QQ 账号格式无效");

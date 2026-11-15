@@ -1,6 +1,6 @@
 {
   "name": "qqnt-export",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Local-first QQ NT chat reader and exporter with a pure CLI interface",
   "type": "module",
   "bin": {

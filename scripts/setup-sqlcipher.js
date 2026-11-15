@@ -28,11 +28,51 @@ if (existsSync(executable)) {
 
 mkdirSync(dirname(archive), { recursive: true });
 process.stdout.write("Downloading pinned SQLCipher Windows build...\n");
-const response = await fetch(url, { redirect: "follow" });
-if (!response.ok || !response.body) {
-  throw new Error(`SQLCipher 下载失败: HTTP ${response.status}`);
+rmSync(archive, { force: true });
+let downloaded = false;
+const curl = spawnSync(
+  "curl.exe",
+  [
+    "-L",
+    "--fail",
+    "--retry",
+    "5",
+    "--retry-delay",
+    "2",
+    "--connect-timeout",
+    "15",
+    "--max-time",
+    "300",
+    "--silent",
+    "--show-error",
+    "-o",
+    archive,
+    url,
+  ],
+  { stdio: "inherit" },
+);
+downloaded = curl.status === 0;
+
+if (!downloaded) {
+  rmSync(archive, { force: true });
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    try {
+      const response = await fetch(url, { redirect: "follow" });
+      if (!response.ok || !response.body) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      await pipeline(Readable.fromWeb(response.body), createWriteStream(archive));
+      downloaded = true;
+      break;
+    } catch (error) {
+      rmSync(archive, { force: true });
+      if (attempt === 3) {
+        throw new Error(`SQLCipher 下载失败: ${error.message}`);
+      }
+      await new Promise((resolve) => setTimeout(resolve, attempt * 1000));
+    }
+  }
 }
-await pipeline(Readable.fromWeb(response.body), createWriteStream(archive));
 
 const digest = createHash("sha256").update(readFileSync(archive)).digest("hex");
 if (digest !== expectedSha256) {

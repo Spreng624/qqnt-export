@@ -1,0 +1,7 @@
+interface:
+  display_name: "QQNT Export"
+  short_description: "Install and operate the local QQNT chat exporter"
+  default_prompt: "Use $qqnt-export to install the latest release and export my QQNT chat history."
+
+policy:
+  allow_implicit_invocation: true

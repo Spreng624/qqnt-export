@@ -4,7 +4,7 @@ use crate::export::export_messages;
 use crate::index::build_library;
 use crate::key_capture::capture_database_key;
 use crate::key_scan::inspect_wrapper;
-use crate::key_store::{load_key, save_key};
+use crate::key_store::{has_key, load_key, save_key};
 use crate::query::{self, MessageFilter};
 use anyhow::{bail, Result};
 use clap::{Parser, Subcommand};
@@ -110,6 +110,10 @@ enum KeyCommand {
     Inspect {
         #[arg(long)]
         wrapper: Option<PathBuf>,
+    },
+    Check {
+        account: String,
+        db: PathBuf,
     },
 }
 
@@ -254,6 +258,23 @@ pub fn run() -> Result<()> {
         Command::Key {
             command: KeyCommand::Inspect { wrapper },
         } => print_json(&inspect_wrapper(wrapper.as_deref())?),
+        Command::Key {
+            command: KeyCommand::Check { account, db },
+        } => {
+            let cached = has_key(&account)?;
+            let valid = if cached {
+                load_key(&account)
+                    .and_then(|key| crate::crypto::KeyValidator::new(&db)?.validate(&key))
+                    .unwrap_or(false)
+            } else {
+                false
+            };
+            print_json(&serde_json::json!({
+                "account": account,
+                "cached": cached,
+                "valid": valid,
+            }))
+        }
     }
 }
 

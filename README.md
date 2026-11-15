@@ -83,6 +83,10 @@ test/      测试
 
 `open` 只读取已保存的密钥，不会再次启动或调试 QQ。QQ 数据变化后，重复执行 `open` 即可重建索引；如果密钥失效或 QQ 重建了数据库，重新执行 `auth`。
 
+`auth` 会先验证已缓存的密钥；有效时直接跳过，不会重复启动 QQ。
+
+Codex 用户也可以从 Release 下载 `qqnt-export-skill.zip`，解压到 `$env:CODEX_HOME\skills`（未设置 `CODEX_HOME` 时使用 `$HOME\.codex\skills`），之后通过 `$qqnt-export` 安装最新版工具并使用相同流程。
+
 读取和导出记录：
 
 ```powershell

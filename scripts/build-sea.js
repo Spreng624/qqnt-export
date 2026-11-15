@@ -111,6 +111,12 @@ copyFileSync(
   join(root, "vendor", "sqlcipher", "SQLCIPHER_SQLITE_LICENSE.md"),
   join(distDir, "SQLCIPHER_SQLITE_LICENSE.md"),
 );
+const skillArchive = join(distDir, "qqnt-export-skill.zip");
+run("powershell.exe", [
+  "-NoProfile",
+  "-Command",
+  `Compress-Archive -LiteralPath '${join(root, "skills", "qqnt-export")}' -DestinationPath '${skillArchive}' -Force`,
+]);
 process.stdout.write(`SEA: ${output}\n`);
 
 function run(command, args) {
